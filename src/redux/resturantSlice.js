@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 //api call- createAsync Thunk
-export const fetchResturants = createAsyncThunk('restuarantList/fetchResturants', () => {
-    axios.get('/restaurants.json').then(response => response.data.restaurants)
+export const fetchResturants = createAsyncThunk('restuarantList/fetchResturants',() => {
+   return axios.get('/restaurants.json').then(response => response.data.restaurants)
     //apicall
 
 })
@@ -11,8 +11,17 @@ const resturantSlice = createSlice({
     initialState: {
         loading: false,
         allRestaurants: [],
+        allResturantContainer:[],
         error: ''
     },
+    reducers:{
+        searchRestuarant:(state,action)=>{
+            state.allRestaurants=state.allResturantContainer.filter(item=>item.neighborhood.toLowerCase().includes(action.payload))
+
+        }
+    },
+
+    
     extraReducers: (builder) => {
         builder.addCase(fetchResturants.pending, (state) => {
             state.loading = true;
@@ -20,6 +29,7 @@ const resturantSlice = createSlice({
         builder.addCase(fetchResturants.fulfilled, (state, action) => {
             state.loading = false;
             state.allRestaurants = action.payload
+            state.allResturantContainer=action.payload
             state.error = ""
         })
         builder.addCase(fetchResturants.rejected, (state, action) => {
@@ -29,4 +39,5 @@ const resturantSlice = createSlice({
             })
     }
 })
+export const {searchRestuarant}=resturantSlice.actions
 export default resturantSlice.reducer
